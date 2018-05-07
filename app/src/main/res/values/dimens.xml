@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <!--<dimen name="splash_icon_height_width">200</dimen>-->
+    <!--<dimen name="splash_icon_margin_top">100</dimen>-->
+    <!--<dimen name="dp_8">32</dimen>-->
+    <!--<dimen name="splash_app_name_text_size">16</dimen>-->
+    <!--<dimen name="splash_app_version_margin_bottom">16</dimen>-->
+    <!--<dimen name="splash_app_version_text_size">20</dimen>-->
+</resources>

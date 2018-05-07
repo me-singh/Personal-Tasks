@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.kadyan.personaltasks.Activity.AddTodo"
+    tools:showIn="@layout/activity_add_todo"
+    android:paddingEnd="8dp"
+    android:id="@+id/constraint_add_todo"
+    android:paddingRight="8dp">
+
+    <TextView
+        android:id="@+id/addTitleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/label_title"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--android:background="@null"-->
+    <EditText
+        android:id="@+id/addTitleEditText"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:drawableEnd="@drawable/ic_title_black_24dp"
+        android:inputType="textPersonName"
+        android:hint="@string/hint_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addTitleTextView"
+        android:drawableRight="@drawable/ic_title_black_24dp" />
+
+    <TextView
+        android:id="@+id/addDescriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:text="@string/label_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addTitleEditText"
+        tools:targetApi="jelly_bean" />
+
+    <EditText
+        android:id="@+id/addDescriptionEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:drawableEnd="@drawable/ic_description_black_24dp"
+        android:inputType="textPersonName"
+        android:hint="@string/hint_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addDescriptionTextView"
+        android:drawableRight="@drawable/ic_description_black_24dp" />
+
+    <TextView
+        android:id="@+id/addDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:text="@string/label_dueDate"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addDescriptionEditText"
+        tools:targetApi="jelly_bean" />
+
+    <!--<EditText-->
+        <!--android:id="@+id/Birthday"-->
+        <!--custom:font="@string/font_avenir_book"-->
+        <!--android:clickable="true"-->
+        <!--android:editable="false"-->
+        <!--android:hint="@string/birthday"/>-->
+    <EditText
+        android:id="@+id/addDateEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:drawableEnd="@drawable/ic_date_range_black_24dp"
+        android:inputType="date"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="@string/hint_dueDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addDateTextView"
+        android:drawableRight="@drawable/ic_date_range_black_24dp" />
+
+    <CheckBox
+        android:id="@+id/todoNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:textColor="#808080"
+        android:text="@string/label_get_notified"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.037"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addDateEditText"
+        tools:targetApi="jelly_bean" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="8dp" />
+
+    <TextView
+        android:id="@+id/priorityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:text="@string/label_priority"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/todoNotification"
+        android:layout_marginLeft="8dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="42dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/priorityTextView"
+        app:layout_constraintTop_toBottomOf="@+id/todoNotification">
+
+        <RadioButton
+            android:id="@+id/radioNotImportant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/label_not_important" />
+
+        <RadioButton
+            android:layout_marginLeft="8dp"
+            android:id="@+id/radioImportant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_important"
+            android:layout_marginStart="8dp" />
+    </RadioGroup>
+
+</android.support.constraint.ConstraintLayout>
