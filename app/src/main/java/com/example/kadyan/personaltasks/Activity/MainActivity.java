@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.kadyan.personaltasks.Adapters.TodoAdapter;
 import com.example.kadyan.personaltasks.Constants.AppConstants;
+import com.example.kadyan.personaltasks.Constants.DatabaseConstants;
 import com.example.kadyan.personaltasks.Data.Todo;
 import com.example.kadyan.personaltasks.Data.TodoDatabase;
 import com.example.kadyan.personaltasks.R;
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 
     @Override
     public void onItemPriorityChanged(Todo todo, int position) {
-        if (position>-1){
+        if (position > -1){
             pendingTasks.set(position,todo);
             todoAdapter.notifyItemChanged(position);
             todoDatabase.updateDbItem(todo);
@@ -298,12 +299,13 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
                 int id=item.getItemId();
                 if (id == R.id.action_complete){
                     Toast.makeText(getBaseContext(),"Complete",Toast.LENGTH_SHORT).show();
+                    setTaskCompleted(todo, position);
                 }else if (id == R.id.action_share){
                     Toast.makeText(getBaseContext(),"Share",Toast.LENGTH_SHORT).show();
                     shareTodo(todo);
                 }else if (id == R.id.action_delete){
                     Toast.makeText(getBaseContext(),"Delete",Toast.LENGTH_SHORT).show();
-                    deleteTodo(todo,position);
+                    deleteTodo(todo, position);
                 }
                 mode.finish();
                 return true;
@@ -313,6 +315,13 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
             public void onDestroyActionMode(ActionMode mode) {
             }
         });
+    }
+
+    private void setTaskCompleted(Todo todo, int position) {
+        pendingTasks.remove(todo);
+        todoAdapter.notifyItemChanged(position);
+        todo.setType(DatabaseConstants.COMPLETED_TASKS);
+        todoDatabase.updateDbItem(todo);
     }
 
 

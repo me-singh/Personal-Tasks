@@ -34,7 +34,7 @@
         <activity
             android:name=".Activity.CompletedTasks"
             android:label="@string/title_activity_completed_tasks"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

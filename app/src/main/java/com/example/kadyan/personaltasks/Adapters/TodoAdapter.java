@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.kadyan.personaltasks.Activity.MainActivity;
 import com.example.kadyan.personaltasks.Data.Todo;
 import com.example.kadyan.personaltasks.R;
 import com.example.kadyan.personaltasks.Utils.OnRecyclerItemListner;
@@ -51,10 +52,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         holder.importantOrNot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"ON STAR CLICK",Toast.LENGTH_SHORT).show();
-                currentTodo.setPriority(Math.abs(1-currentTodo.getPriority()));
-                setStarForPriority(holder.importantOrNot,currentTodo.getPriority());
-                recyclerItemListner.onItemPriorityChanged(currentTodo,holder.getAdapterPosition());
+                if (context instanceof MainActivity){
+                    Toast.makeText(context,"ON STAR CLICK",Toast.LENGTH_SHORT).show();
+                    currentTodo.setPriority(Math.abs(1-currentTodo.getPriority()));
+                    setStarForPriority(holder.importantOrNot,currentTodo.getPriority());
+                    recyclerItemListner.onItemPriorityChanged(currentTodo,holder.getAdapterPosition());
+                }
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
