@@ -27,9 +27,14 @@
             android:label="@string/title_activity_add_todo"
             android:parentActivityName=".Activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activity.MainActivity"/>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".Activity.CompletedTasks"
+            android:label="@string/title_activity_completed_tasks"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

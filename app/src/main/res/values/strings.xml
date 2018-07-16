@@ -21,6 +21,7 @@
     <string name="label_not_important">Not Important</string>
     <string name="label_important">Important</string>
     <string name="title_activity_main">Pending Tasks</string>
-    <string name="share_task_format">Title: %s Description: %s DueDate: %s Priority: %s TimeOfAddition: %s</string>
+    <string name="share_task_format">Title: %s Description: %s DueDate: %s Priority: %s Status: %s TimeOfAddition: %s</string>
+    <string name="title_activity_completed_tasks">CompletedTasks</string>
 
 </resources>
