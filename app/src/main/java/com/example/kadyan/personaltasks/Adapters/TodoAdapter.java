@@ -1,7 +1,9 @@
 package com.example.kadyan.personaltasks.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +24,14 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     private Context context;
     private ArrayList<Todo> arrayList;
+    private ArrayList<Todo> selectedPendingTasks;
     private OnRecyclerItemListner recyclerItemListner;
 
 
-    public TodoAdapter(Context context, ArrayList<Todo> arrayList) {
+    public TodoAdapter(Context context, ArrayList<Todo> arrayList, ArrayList<Todo> selectedPendingTasks) {
         this.context = context;
         this.arrayList = arrayList;
-        /***Multi Select Functionality***/
-//        this.selectedPendingTasks=selectedPendingTasks;
+        this.selectedPendingTasks = selectedPendingTasks;
         recyclerItemListner= (OnRecyclerItemListner) context;
     }
 
@@ -49,6 +51,9 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         holder.description.setText(currentTodo.getDescription());
         holder.date.setText(currentTodo.getDueDate());
         setStarForPriority(holder.importantOrNot,currentTodo.getPriority());
+        if (selectedPendingTasks.contains(currentTodo)){
+            holder.itemView.setBackgroundColor(Color.BLUE);
+        }
         holder.importantOrNot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,11 +98,11 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 
     /***Multi Select Functionality***/
-//    public void refreshAdapter(ArrayList<Todo> arrayList, ArrayList<Todo> selectedPendingTasks) {
-//        this.arrayList = arrayList;
-//        this.selectedPendingTasks = selectedPendingTasks;
-//        this.notifyDataSetChanged();
-//    }
+    public void refreshAdapter(ArrayList<Todo> arrayList, ArrayList<Todo> selectedPendingTasks) {
+        this.arrayList = arrayList;
+        this.selectedPendingTasks = selectedPendingTasks;
+        this.notifyDataSetChanged();
+    }
 
 
     class TodoViewHolder extends RecyclerView.ViewHolder{

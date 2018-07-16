@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.kadyan.personaltasks.Adapters.TodoAdapter;
+import com.example.kadyan.personaltasks.Constants.DatabaseConstants;
 import com.example.kadyan.personaltasks.Data.Todo;
 import com.example.kadyan.personaltasks.Data.TodoDatabase;
 import com.example.kadyan.personaltasks.R;
@@ -37,6 +38,10 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
     //should be synced with one other at all times as positions must be same
     ArrayList<Todo> completedTasks;
     TodoDatabase todoDatabase;
+
+    private ArrayList<Todo> selectedPendingTasks = new ArrayList<>();
+    boolean isMultiSelect=false;
+    private ActionMode mActionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +66,7 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.ItemDecoration itemDecoration=new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
-        todoAdapter=new TodoAdapter(this,completedTasks);
-        /***Multi Select Functionality***/
-//        todoAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        todoAdapter = new TodoAdapter(this, completedTasks, selectedPendingTasks);
         recyclerView.setAdapter(todoAdapter);
     }
 
@@ -81,7 +84,8 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
 
         //search option(need to be worked later)
         MenuItem searchItem=menu.findItem(R.id.action_search);
-        android.support.v7.widget.SearchView searchView= (android.support.v7.widget.SearchView) MenuItemCompat.getActionView(searchItem);
+        android.support.v7.widget.SearchView searchView =
+                (android.support.v7.widget.SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -118,72 +122,83 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
 
     @Override
     public void onItemClick(Todo todo, int position) {
+        Toast.makeText(this,"ON CLICK WORKING AT " + position + "POSITION",Toast.LENGTH_SHORT).show();
+        if (isMultiSelect)
+            multiSelect(position);
     }
 
-    //second toolbar for more options
+    private void multiSelect(int position) {
+        if (mActionMode != null) {
+            if (selectedPendingTasks.contains(completedTasks.get(position))) {
+                selectedPendingTasks.remove(completedTasks.get(position));
+            } else {
+                selectedPendingTasks.add(completedTasks.get(position));
+            }
+            if (!selectedPendingTasks.isEmpty())
+                mActionMode.setTitle("" + selectedPendingTasks.size());
+            else {
+                mActionMode.finish();
+            }
+            todoAdapter.refreshAdapter(completedTasks, selectedPendingTasks);
+        }
+    }
+
     @Override
     public void onItemLongClick(final Todo todo, final int position) {
-        /***Multi Select Functionality***/
-//        if (!isMultiSelect) {
-//            selectedPendingTasks = new ArrayList<>();
-//            isMultiSelect = true;
-//            if (mActionMode == null)
-//                mActionMode = startSupportActionMode(new ActionMode.Callback() {
-//                    @Override
-//                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public void onDestroyActionMode(ActionMode mode) {
-//
-//                    }
-//                });
-//        }
-//        multiSelect(position);
+        if (!isMultiSelect) {
+            selectedPendingTasks = new ArrayList<>();
+            isMultiSelect = true;
+            if (mActionMode == null)
+                mActionMode = startSupportActionMode(new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                        mode.getMenuInflater().inflate(R.menu.menu_recycler_item_options,menu);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        int id=item.getItemId();
+                        if (id == R.id.action_complete){
+                            Toast.makeText(getBaseContext(),"Pending",Toast.LENGTH_SHORT).show();
+                            setTaskPending(todo, position);
+                        }else if (id == R.id.action_share){
+                            Toast.makeText(getBaseContext(),"Share",Toast.LENGTH_SHORT).show();
+                            shareTodo(todo);
+                        }else if (id == R.id.action_delete){
+                            Toast.makeText(getBaseContext(),"Delete",Toast.LENGTH_SHORT).show();
+                            deleteTodo(todo,position);
+                        }else if (id == android.R.id.home){
+                            isMultiSelect = false;
+                            selectedPendingTasks.clear();
+                            todoAdapter.refreshAdapter(completedTasks, selectedPendingTasks);
+                        }
+                        mode.finish();
+                        return true;
+                    }
+
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                        isMultiSelect = false;
+                        selectedPendingTasks.clear();
+                        todoAdapter.refreshAdapter(completedTasks, selectedPendingTasks);
+                    }
+                });
+        }
+        multiSelect(position);
         Toast.makeText(this,"ON LONG CLICK WORKING AT " + position + "POSITION",Toast.LENGTH_SHORT).show();
-        startSupportActionMode(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_recycler_item_options,menu);
-                return true;
-            }
+    }
 
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                int id=item.getItemId();
-                if (id == R.id.action_complete){
-                    Toast.makeText(getBaseContext(),"Complete",Toast.LENGTH_SHORT).show();
-                }else if (id == R.id.action_share){
-                    Toast.makeText(getBaseContext(),"Share",Toast.LENGTH_SHORT).show();
-                    shareTodo(todo);
-                }else if (id == R.id.action_delete){
-                    Toast.makeText(getBaseContext(),"Delete",Toast.LENGTH_SHORT).show();
-                    deleteTodo(todo,position);
-                }
-                mode.finish();
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
+    private void setTaskPending(Todo todo, int position) {
+        completedTasks.remove(todo);
+        todoAdapter.notifyItemChanged(position);
+        todo.setType(DatabaseConstants.PENDING_TASKS);
+        todoDatabase.updateDbItem(todo);
     }
 
     @Override
