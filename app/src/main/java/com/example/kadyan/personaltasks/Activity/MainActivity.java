@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
         setSupportActionBar(toolbar);
 
         todoDatabase = TodoDatabase.getTodoDatabase(this);
-        pendingTasks = todoDatabase.getAllTodos();
+        pendingTasks = todoDatabase.getAllPendingTasks();
         addItemToRecyclerView();
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
         todoAdapter.notifyItemRemoved(position);
         todoDatabase.deleteDbItem(currentTodo);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

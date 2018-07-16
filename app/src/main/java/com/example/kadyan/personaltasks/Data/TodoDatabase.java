@@ -11,14 +11,6 @@ import com.example.kadyan.personaltasks.Constants.DatabaseConstants;
 
 import java.util.ArrayList;
 
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_DESCRIPTION;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_DUEDATE;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_PRIORITY;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TIME_OF_ADDITION;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TITLE;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TODO_TYPE;
-import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.TODO_TABLE;
-
 /**
  * Created by Kadyan on 30/04/2018.
  */
@@ -92,6 +84,28 @@ public class TodoDatabase extends SQLiteOpenHelper {
         }
         Log.e(TAG, "getAllTodos: "+ todoArrayList.size() );
         return todoArrayList;
+    }
+
+    public ArrayList<Todo> getAllPendingTasks(){
+        ArrayList<Todo> pendingTodos = new ArrayList<>();
+        ArrayList<Todo> allTodos = getAllTodos();
+        for(int i=0;i<allTodos.size();i++){
+            if (allTodos.get(i).getType().equals(DatabaseConstants.PENDING_TASKS)){
+                pendingTodos.add(allTodos.get(i));
+            }
+        }
+        return pendingTodos;
+    }
+
+    public ArrayList<Todo> getAllCompletedTasks(){
+        ArrayList<Todo> completedTodos = new ArrayList<>();
+        ArrayList<Todo> allTodos = getAllTodos();
+        for(int i=0;i<allTodos.size();i++){
+            if (allTodos.get(i).getType().equals(DatabaseConstants.COMPLETED_TASKS)){
+                completedTodos.add(allTodos.get(i));
+            }
+        }
+        return completedTodos;
     }
 
     public void addTodoToDb(Todo todo){
