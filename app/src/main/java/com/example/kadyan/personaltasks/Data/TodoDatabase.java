@@ -7,7 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.kadyan.personaltasks.Constants.DatabaseConstants;
+
 import java.util.ArrayList;
+
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_DESCRIPTION;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_DUEDATE;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_PRIORITY;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TIME_OF_ADDITION;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TITLE;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.COLUMN_TODO_TYPE;
+import static com.example.kadyan.personaltasks.Constants.DatabaseConstants.TODO_TABLE;
 
 /**
  * Created by Kadyan on 30/04/2018.
@@ -35,12 +45,12 @@ public class TodoDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TodoContract.TODO_TABLE +
+        String CREATE_TABLE = "CREATE TABLE " + DatabaseConstants.TODO_TABLE +
                 "(" +
-                TodoContract.COLUMN_ID+ " INTEGER PRIMARY KEY," + // Define a primary key
-                TodoContract.COLUMN_TITLE + " TEXT, " + TodoContract.COLUMN_DESCRIPTION+ " TEXT," + // Define a foreign key
-                TodoContract.COLUMN_DUEDATE + " TEXT, " + TodoContract.COLUMN_PRIORITY+ " INTEGER, " +
-                TodoContract.COLUMN_TIME_OF_ADDITION+ " INTEGER)";
+                DatabaseConstants.COLUMN_ID+ " INTEGER PRIMARY KEY," + // Define a primary key
+                DatabaseConstants.COLUMN_TITLE + " TEXT, " + DatabaseConstants.COLUMN_DESCRIPTION+ " TEXT," + // Define a foreign key
+                DatabaseConstants.COLUMN_DUEDATE + " TEXT, " + DatabaseConstants.COLUMN_PRIORITY+ " INTEGER, " +
+                DatabaseConstants.COLUMN_TODO_TYPE + " TEXT, " + DatabaseConstants.COLUMN_TIME_OF_ADDITION+ " INTEGER)";
         Log.d("Todo", CREATE_TABLE);
         db.execSQL(CREATE_TABLE);
     }
@@ -48,15 +58,15 @@ public class TodoDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TodoContract.TODO_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstants.TODO_TABLE);
             onCreate(db);
         }
     }
 
     public ArrayList<Todo> getAllTodos(){
-        ArrayList<Todo> todoArrayList=new ArrayList<>();
-        SQLiteDatabase sqLiteDatabase=todoDatabase.getReadableDatabase();
-        Cursor cursor=sqLiteDatabase.query(TodoContract.TODO_TABLE,
+        ArrayList<Todo> todoArrayList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = todoDatabase.getReadableDatabase();
+        Cursor cursor=sqLiteDatabase.query(DatabaseConstants.TODO_TABLE,
                 null,
                 null,
                 null,
@@ -66,11 +76,12 @@ public class TodoDatabase extends SQLiteOpenHelper {
         try {
             if (cursor.moveToFirst()){
                 do {
-                    todoArrayList.add(new Todo(cursor.getString(cursor.getColumnIndex(TodoContract.COLUMN_TITLE)),
-                            cursor.getString(cursor.getColumnIndex(TodoContract.COLUMN_DESCRIPTION)),
-                            cursor.getString(cursor.getColumnIndex(TodoContract.COLUMN_DUEDATE)),
-                            cursor.getInt(cursor.getColumnIndex(TodoContract.COLUMN_PRIORITY)),
-                            cursor.getLong(cursor.getColumnIndex(TodoContract.COLUMN_TIME_OF_ADDITION))
+                    todoArrayList.add(new Todo(cursor.getString(cursor.getColumnIndex(DatabaseConstants.COLUMN_TITLE)),
+                            cursor.getString(cursor.getColumnIndex(DatabaseConstants.COLUMN_DESCRIPTION)),
+                            cursor.getString(cursor.getColumnIndex(DatabaseConstants.COLUMN_DUEDATE)),
+                            cursor.getInt(cursor.getColumnIndex(DatabaseConstants.COLUMN_PRIORITY)),
+                            cursor.getString(cursor.getColumnIndex(DatabaseConstants.COLUMN_TODO_TYPE)),
+                            cursor.getLong(cursor.getColumnIndex(DatabaseConstants.COLUMN_TIME_OF_ADDITION))
                     ));
                 }while (cursor.moveToNext());
             }
@@ -84,17 +95,18 @@ public class TodoDatabase extends SQLiteOpenHelper {
     }
 
     public void addTodoToDb(Todo todo){
-        SQLiteDatabase sqLiteDatabase=todoDatabase.getWritableDatabase();
+        SQLiteDatabase sqLiteDatabase = todoDatabase.getWritableDatabase();
         sqLiteDatabase.beginTransaction();
         try {
-            ContentValues cv=new ContentValues();
-            cv.put(TodoContract.COLUMN_TITLE,todo.getTitle());
-            cv.put(TodoContract.COLUMN_DESCRIPTION,todo.getDescription());//1525610153924
-            cv.put(TodoContract.COLUMN_DUEDATE,todo.getDueDate());
-            cv.put(TodoContract.COLUMN_PRIORITY,todo.getPriority());
-            cv.put(TodoContract.COLUMN_TIME_OF_ADDITION,todo.getTimeOfAddition());
+            ContentValues cv = new ContentValues();
+            cv.put(DatabaseConstants.COLUMN_TITLE,todo.getTitle());
+            cv.put(DatabaseConstants.COLUMN_DESCRIPTION,todo.getDescription());//1525610153924
+            cv.put(DatabaseConstants.COLUMN_DUEDATE,todo.getDueDate());
+            cv.put(DatabaseConstants.COLUMN_PRIORITY,todo.getPriority());
+            cv.put(DatabaseConstants.COLUMN_TODO_TYPE, todo.getType());
+            cv.put(DatabaseConstants.COLUMN_TIME_OF_ADDITION,todo.getTimeOfAddition());
             Log.e(TAG, "addTodoToDb: "+todo.getTitle()+" "+todo.getDueDate()+" "+todo.getPriority()+" "+todo.getTimeOfAddition() );
-            long id=sqLiteDatabase.insertOrThrow(TodoContract.TODO_TABLE,null,cv);
+            long id = sqLiteDatabase.insertOrThrow(DatabaseConstants.TODO_TABLE,null,cv);
             Log.e(TAG, "addTodoToDb: "+ id + "added" );
             if (id == -1)
                 Log.e(TAG, "addTodoToDb: "+"WRONG" );
@@ -111,14 +123,16 @@ public class TodoDatabase extends SQLiteOpenHelper {
         sqLiteDatabase.beginTransaction();
         try {
             ContentValues cv=new ContentValues();
-            cv.put(TodoContract.COLUMN_TITLE,todo.getTitle());
-            cv.put(TodoContract.COLUMN_DESCRIPTION,todo.getDescription());
-            cv.put(TodoContract.COLUMN_DUEDATE,todo.getDueDate());
-            cv.put(TodoContract.COLUMN_PRIORITY,todo.getPriority());
-            cv.put(TodoContract.COLUMN_TIME_OF_ADDITION,todo.getTimeOfAddition());
-            int items=sqLiteDatabase.update(TodoContract.TODO_TABLE,cv,TodoContract.COLUMN_TIME_OF_ADDITION+"=?",
-                                                                        new String[]{String.valueOf(todo.getTimeOfAddition())});
-            if (items==1)
+            cv.put(DatabaseConstants.COLUMN_TITLE, todo.getTitle());
+            cv.put(DatabaseConstants.COLUMN_DESCRIPTION, todo.getDescription());
+            cv.put(DatabaseConstants.COLUMN_DUEDATE, todo.getDueDate());
+            cv.put(DatabaseConstants.COLUMN_PRIORITY, todo.getPriority());
+            cv.put(DatabaseConstants.COLUMN_TODO_TYPE, todo.getType());
+            cv.put(DatabaseConstants.COLUMN_TIME_OF_ADDITION, todo.getTimeOfAddition());
+            int items = sqLiteDatabase.update(DatabaseConstants.TODO_TABLE, cv,
+                    DatabaseConstants.COLUMN_TIME_OF_ADDITION + "=?",
+                    new String[]{String.valueOf(todo.getTimeOfAddition())});
+            if (items == 1)
                 Log.e(TAG, "updateDbItem: "+"RIGHT");
             else
                 Log.e(TAG, "updateDbItem: "+"WRONG");
@@ -132,7 +146,8 @@ public class TodoDatabase extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.beginTransaction();
         try {
-            int items = sqLiteDatabase.delete(TodoContract.TODO_TABLE, TodoContract.COLUMN_TIME_OF_ADDITION + "=?",
+            int items = sqLiteDatabase.delete(DatabaseConstants.TODO_TABLE,
+                    DatabaseConstants.COLUMN_TIME_OF_ADDITION + "=?",
                     new String[]{String.valueOf(todo.getTimeOfAddition())});
             Log.d("Rows", String.valueOf(items));
             if (items == 1)

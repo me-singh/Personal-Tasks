@@ -23,6 +23,7 @@ import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.kadyan.personaltasks.Constants.DatabaseConstants;
 import com.example.kadyan.personaltasks.Data.Todo;
 import com.example.kadyan.personaltasks.R;
 
@@ -30,21 +31,24 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import static com.example.kadyan.personaltasks.Constants.AppConstants.POSITION_IN_RECYCLER_VIEW;
+import static com.example.kadyan.personaltasks.Constants.AppConstants.TODO_OBJECT;
+
 public class AddTodo extends AppCompatActivity{
 
-    public final String TAG=this.getClass().getName();
+    public final String TAG = this.getClass().getName();
 
-    public static final String POSITION_IN_RECYCLER_VIEW="position";
-    public static final String TODO_OBJECT="todo";
     Todo currentTodo;
     int currentPosition;
 
-    EditText addTitle,addDescription,addDueDate;
+    EditText addTitle;
+    EditText addDescription;
+    EditText addDueDate;
     RadioGroup radioGroup;
     Toolbar toolbar;
     CheckBox todoNotification;//to make an alarm or notification
 
-    Calendar myCalendar=Calendar.getInstance();
+    Calendar myCalendar = Calendar.getInstance();
     AlertDialog alertDialog;
 
     @Override
@@ -57,7 +61,7 @@ public class AddTodo extends AppCompatActivity{
         if(getSupportActionBar()!=null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (getIntent().hasExtra(TODO_OBJECT)){//checks if contains task already in the intent(to edit the task)
+        if (getIntent().hasExtra(TODO_OBJECT)){
             setUpTheActivity(getIntent());
         }
 
@@ -92,14 +96,14 @@ public class AddTodo extends AppCompatActivity{
 
 
     private void setUpTheActivity(Intent intent) {
-        currentTodo= (Todo) intent.getSerializableExtra(TODO_OBJECT);
+        currentTodo = (Todo) intent.getSerializableExtra(TODO_OBJECT);
         addTitle.setText(currentTodo.getTitle());
         addDescription.setText(currentTodo.getDescription());
         addDueDate.setText(currentTodo.getDueDate());
-        if (currentTodo.getPriority()==1){
+        if (currentTodo.getPriority() == 1){
             ((RadioButton)findViewById(R.id.radioImportant)).toggle();
         }
-        currentPosition=intent.getIntExtra(POSITION_IN_RECYCLER_VIEW,-1);
+        currentPosition = intent.getIntExtra(POSITION_IN_RECYCLER_VIEW,-1);
         Log.e(TAG, "onCreate: "+ currentPosition+" "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
                 currentTodo.getDueDate()+" "+currentTodo.getPriority()+" "+currentTodo.getTimeOfAddition());
     }
@@ -131,14 +135,14 @@ public class AddTodo extends AppCompatActivity{
 
 
     private void updateDueDate() {
-        String myFormat="dd/MM/yyyy";
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat(myFormat, Locale.getDefault());
+        String myFormat = "dd/MM/yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.getDefault());
         addDueDate.setText(simpleDateFormat.format(myCalendar.getTime()));
     }
 
 
     private void setTimePicker() {
-        TimePickerDialog.OnTimeSetListener timeSetListener=new TimePickerDialog.OnTimeSetListener() {
+        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 myCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
@@ -153,8 +157,8 @@ public class AddTodo extends AppCompatActivity{
 
     //update to the ui to show to the user
     private void updateNotificationTime() {
-        String myFormat="hh:mm";
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat(myFormat,Locale.getDefault());
+        String myFormat = "hh:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat,Locale.getDefault());
         Toast.makeText(this,simpleDateFormat.format(myCalendar.getTime()),Toast.LENGTH_SHORT).show();
         //set time to the required view
     }
@@ -162,7 +166,7 @@ public class AddTodo extends AppCompatActivity{
 
     //show alert dialog to save details before pressing back button in addTodo activity
     private void showAlertDialog(){
-        AlertDialog.Builder builder=new AlertDialog.Builder(AddTodo.this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddTodo.this)
                 .setTitle("Are You Sure?")
                 .setMessage("Quit Without Saving?")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -187,15 +191,15 @@ public class AddTodo extends AppCompatActivity{
 
     private int getPriority() {
         int priority;
-        int priorityId=radioGroup.getCheckedRadioButtonId();
-        if (priorityId==R.id.radioNotImportant) {
+        int priorityId = radioGroup.getCheckedRadioButtonId();
+        if (priorityId == R.id.radioNotImportant) {
             priority = 0;
         }
-        else if (priorityId==R.id.radioImportant){
+        else if (priorityId == R.id.radioImportant){
             priority = 1;
         }
         else {
-            priority=222;
+            priority = 222;
             Toast.makeText(this,"MUST BE ERROR",Toast.LENGTH_SHORT).show();
         }
         return priority;
@@ -221,13 +225,14 @@ public class AddTodo extends AppCompatActivity{
                 if (TextUtils.isEmpty(addTitle.getText())){
                     Snackbar.make(findViewById(R.id.constraint_add_todo),"Title must be provided",Snackbar.LENGTH_SHORT).show();
                 }else {
-                    Intent intent=new Intent();
+                    Intent intent = new Intent();
                     Todo todo;
-                    if (currentTodo!=null){
+                    if (currentTodo != null){
                         todo = new Todo(addTitle.getText().toString(),
                                 addDescription.getText().toString(),
                                 addDueDate.getText().toString(),
                                 getPriority(),
+                                DatabaseConstants.PENDING_TASKS,
                                 currentTodo.getTimeOfAddition());
                         intent.putExtra(POSITION_IN_RECYCLER_VIEW,currentPosition);
                     }else {
@@ -235,6 +240,7 @@ public class AddTodo extends AppCompatActivity{
                                 addDescription.getText().toString(),
                                 addDueDate.getText().toString(),
                                 getPriority(),
+                                DatabaseConstants.PENDING_TASKS,
                                 Calendar.getInstance().getTimeInMillis());
                     }
                     intent.putExtra(TODO_OBJECT,todo);
@@ -250,8 +256,8 @@ public class AddTodo extends AppCompatActivity{
                 }
                 return true;
             }
+            default : return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
 

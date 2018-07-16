@@ -98,14 +98,16 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 
     class TodoViewHolder extends RecyclerView.ViewHolder{
-        TextView title,description,date;
+        TextView title;
+        TextView description;
+        TextView date;
         ImageButton importantOrNot;
-        public TodoViewHolder(View itemView) {
+        TodoViewHolder(View itemView) {
             super(itemView);
-            title=itemView.findViewById(R.id.todo_title);
-            description=itemView.findViewById(R.id.todo_description);
-            date=itemView.findViewById(R.id.todo_date);
-            importantOrNot=itemView.findViewById(R.id.important_or_not);
+            title = itemView.findViewById(R.id.todo_title);
+            description = itemView.findViewById(R.id.todo_description);
+            date = itemView.findViewById(R.id.todo_date);
+            importantOrNot = itemView.findViewById(R.id.important_or_not);
         }
     }
 

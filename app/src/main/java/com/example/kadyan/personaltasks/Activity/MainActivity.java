@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.kadyan.personaltasks.Adapters.TodoAdapter;
+import com.example.kadyan.personaltasks.Constants.AppConstants;
 import com.example.kadyan.personaltasks.Data.Todo;
 import com.example.kadyan.personaltasks.Data.TodoDatabase;
 import com.example.kadyan.personaltasks.R;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 
     private static final int REQUEST_ADD_NEW_TODO = 123;
     private static final int REQUEST_EDIT_TODO = 456;
-    private final String TAG=this.getClass().getName();
+    private final String TAG = this.getClass().getName();
 
     RecyclerView recyclerView;
     TodoAdapter todoAdapter;
@@ -114,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 
     private void addItemToRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //added item decoration(using divider b/w element)
         RecyclerView.ItemDecoration itemDecoration=new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
         todoAdapter=new TodoAdapter(this,pendingTasks);
@@ -133,17 +133,17 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode== REQUEST_ADD_NEW_TODO && resultCode==RESULT_OK){
-            Todo currentTodo= (Todo) data.getSerializableExtra(AddTodo.TODO_OBJECT);
+        if (requestCode == REQUEST_ADD_NEW_TODO && resultCode == RESULT_OK){
+            Todo currentTodo = (Todo) data.getSerializableExtra(AppConstants.TODO_OBJECT);
             todoDatabase.addTodoToDb(currentTodo);
             pendingTasks.add(currentTodo);
             todoAdapter.notifyDataSetChanged();
             Log.e(TAG, "onActivityResult: "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
                     currentTodo.getDueDate()+" "+currentTodo.getPriority()+" "+currentTodo.getTimeOfAddition());
-        }else if (requestCode == REQUEST_EDIT_TODO && resultCode==RESULT_OK){
-            Todo currentTodo= (Todo) data.getSerializableExtra(AddTodo.TODO_OBJECT);
-            int position=data.getIntExtra(AddTodo.POSITION_IN_RECYCLER_VIEW,-1);
-            if (position>-1){
+        }else if (requestCode == REQUEST_EDIT_TODO && resultCode == RESULT_OK){
+            Todo currentTodo = (Todo) data.getSerializableExtra(AppConstants.TODO_OBJECT);
+            int position = data.getIntExtra(AppConstants.POSITION_IN_RECYCLER_VIEW,-1);
+            if (position > -1){
                 pendingTasks.set(position,currentTodo);
                 todoAdapter.notifyItemChanged(position);
                 todoDatabase.updateDbItem(currentTodo);
@@ -206,9 +206,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 //            multiSelect(position);
 //        else {
             Intent intent=new Intent(MainActivity.this,AddTodo.class);
-            intent.putExtra(AddTodo.TODO_OBJECT,todo);
-            intent.putExtra(AddTodo.POSITION_IN_RECYCLER_VIEW,position);
-            startActivityForResult(intent,REQUEST_EDIT_TODO);
+            intent.putExtra(AppConstants.TODO_OBJECT, todo);
+            intent.putExtra(AppConstants.POSITION_IN_RECYCLER_VIEW, position);
+            startActivityForResult(intent, REQUEST_EDIT_TODO);
 //        }
     }
 
@@ -314,8 +314,9 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
 
 
     public void shareTodo(Todo todo) {
-        String text=String.format("Title: %s\nDescription: %s\nDueDate: %s\nPriority: %s\nTimeOfAddition: %s",
-                todo.getTitle(),todo.getDescription(),todo.getDueDate(),todo.getPriority(),todo.getTimeOfAddition());
+        String text=String.format(getString(R.string.share_task_format),
+                todo.getTitle(),todo.getDescription(),todo.getDueDate(),
+                String.valueOf(todo.getPriority()),String.valueOf(todo.getTimeOfAddition()));
         Log.e(TAG, "shareTodo: "+text );
         String mimeType = "text/plain";
         String title = "Example title";
