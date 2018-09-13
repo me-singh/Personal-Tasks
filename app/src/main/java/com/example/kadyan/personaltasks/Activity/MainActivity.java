@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kadyan.personaltasks.Adapters.TodoAdapter;
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     private static final int REQUEST_EDIT_TODO = 456;
     private final String TAG = this.getClass().getName();
 
-    RecyclerView recyclerView;
     TodoAdapter todoAdapter;
     Toolbar toolbar;
     FloatingActionButton fab;
@@ -57,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     //should be synced with one other at all times as positions must be same
     ArrayList<Todo> pendingTasks;
     TodoDatabase todoDatabase;
+
+
+    RecyclerView overdueRecycler, todayRecycler, tomorrowRecycler, thisWeekRecycler, thisMonthRecycler, restRecycler;
+    TodoAdapter overdueAdapter, todayAdapter, tomorrowAdapter, thisWeekAdapter, thisMonthAdapter, restAdapter;
+//    TextView remain, overdue, today, tomorrow, thisWeek, thisMonth, rest;
 
     private ArrayList<Todo> selectedPendingTasks = new ArrayList<>();
     boolean isMultiSelect=false;
@@ -81,25 +86,25 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
             }
         });
 
-        //swipe to delete functionality(if required)
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Toast.makeText(getBaseContext(), "WORKING", Toast.LENGTH_SHORT).show();
-                int position = viewHolder.getAdapterPosition();
-                try {
-                    Todo currentTodo = pendingTasks.get(position);
-                    deleteTodo(currentTodo, position);
-                } catch (IndexOutOfBoundsException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        }).attachToRecyclerView(recyclerView);
+//        //swipe to delete functionality(if required)
+//        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//                Toast.makeText(getBaseContext(), "WORKING", Toast.LENGTH_SHORT).show();
+//                int position = viewHolder.getAdapterPosition();
+//                try {
+//                    Todo currentTodo = pendingTasks.get(position);
+//                    deleteTodo(currentTodo, position);
+//                } catch (IndexOutOfBoundsException e) {
+//                    Log.e(TAG, e.getMessage());
+//                }
+//            }
+//        }).attachToRecyclerView(recyclerView);
 
     }
 
@@ -107,17 +112,54 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     private void init() {
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
-        recyclerView=findViewById(R.id.pending_tasks_recyclerView);
+        overdueRecycler=findViewById(R.id.overdueTasks);
+        todayRecycler=findViewById(R.id.todayTasks);
+        tomorrowRecycler=findViewById(R.id.tomorrowTasks);
+        thisWeekRecycler=findViewById(R.id.thisWeekTasks);
+        thisMonthRecycler=findViewById(R.id.thisMonthTasks);
+        restRecycler=findViewById(R.id.restTasks);
         fab = findViewById(R.id.fab);
     }
 
 
     private void addItemToRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.ItemDecoration itemDecoration=new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
-        todoAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
-        recyclerView.setAdapter(todoAdapter);
+
+        overdueRecycler.setLayoutManager(new LinearLayoutManager(this));
+        overdueRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        overdueAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        overdueRecycler.setAdapter(overdueAdapter);
+
+        todayRecycler.setLayoutManager(new LinearLayoutManager(this));
+        todayRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        todayAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        todayRecycler.setAdapter(todayAdapter);
+
+        tomorrowRecycler.setLayoutManager(new LinearLayoutManager(this));
+        tomorrowRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        tomorrowAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        tomorrowRecycler.setAdapter(tomorrowAdapter);
+
+        thisWeekRecycler.setLayoutManager(new LinearLayoutManager(this));
+        thisWeekRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        thisWeekAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        thisWeekRecycler.setAdapter(thisWeekAdapter);
+
+        thisMonthRecycler.setLayoutManager(new LinearLayoutManager(this));
+        thisMonthRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        thisMonthAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        thisMonthRecycler.setAdapter(thisMonthAdapter);
+
+        restRecycler.setLayoutManager(new LinearLayoutManager(this));
+        restRecycler.addItemDecoration(itemDecoration);
+        overdueRecycler.setHasFixedSize(true);
+        restAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        restRecycler.setAdapter(restAdapter);
     }
 
 

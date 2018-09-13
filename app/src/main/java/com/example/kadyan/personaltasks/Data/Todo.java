@@ -10,6 +10,20 @@ public class Todo implements Serializable {
     private int priority;
     private String type;
     private long timeOfAddition;
+    private String reminder;
+    private String repeat;
+
+//    public Todo(String title, String description, String dueDate,
+//                int priority, String type, long timeOfAddition, String reminder, String repeat) {
+//        this.title = title;
+//        this.description = description;
+//        this.dueDate = dueDate;
+//        this.priority = priority;
+//        this.type = type;
+//        this.timeOfAddition = timeOfAddition;
+//        this.reminder = reminder;
+//        this.repeat = repeat;
+//    }
 
     public Todo(String title, String description, String dueDate, int priority, String type, long timeOfAddition) {
         this.title = title;
@@ -54,5 +68,21 @@ public class Todo implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(String reminder) {
+        this.reminder = reminder;
+    }
+
+    public String getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(String repeat) {
+        this.repeat = repeat;
     }
 }
