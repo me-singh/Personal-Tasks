@@ -24,14 +24,14 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     private Context context;
     private ArrayList<Todo> arrayList;
-    private ArrayList<Todo> selectedPendingTasks;
+//    private ArrayList<Todo> selectedPendingTasks;
     private OnRecyclerItemListner recyclerItemListner;
 
 
-    public TodoAdapter(Context context, ArrayList<Todo> arrayList, ArrayList<Todo> selectedPendingTasks) {
+    public TodoAdapter(Context context, ArrayList<Todo> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
-        this.selectedPendingTasks = selectedPendingTasks;
+//        this.selectedPendingTasks = selectedPendingTasks;
         recyclerItemListner= (OnRecyclerItemListner) context;
     }
 
@@ -49,18 +49,18 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         final Todo currentTodo=arrayList.get(position);
         holder.title.setText(currentTodo.getTitle());
         holder.description.setText(currentTodo.getDescription());
-        holder.date.setText(currentTodo.getDueDate());
-        setStarForPriority(holder.importantOrNot,currentTodo.getPriority());
-        if (selectedPendingTasks.contains(currentTodo)){
-            holder.itemView.setBackgroundColor(Color.BLUE);
-        }
+        holder.date.setText(currentTodo.getDueDate().toString());
+        setStarForPriority(holder.importantOrNot,currentTodo.isImportant());
+//        if (selectedPendingTasks.contains(currentTodo)){
+//            holder.itemView.setBackgroundColor(Color.BLUE);
+//        }
         holder.importantOrNot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (context instanceof MainActivity){
                     Toast.makeText(context,"ON STAR CLICK",Toast.LENGTH_SHORT).show();
-                    currentTodo.setPriority(Math.abs(1-currentTodo.getPriority()));
-                    setStarForPriority(holder.importantOrNot,currentTodo.getPriority());
+                    currentTodo.setImportant(!currentTodo.isImportant());
+                    setStarForPriority(holder.importantOrNot,currentTodo.isImportant());
                     recyclerItemListner.onItemPriorityChanged(currentTodo,holder.getAdapterPosition());
                 }
             }
@@ -86,13 +86,11 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
         return arrayList.size();
     }
 
-    private void setStarForPriority(ImageButton imageButton, int priority){
-        if (priority == 0){
+    private void setStarForPriority(ImageButton imageButton, boolean isImportant){
+        if (!isImportant){
             imageButton.setImageResource(R.drawable.ic_star_border_black_24dp);
-        }else if (priority == 1){
+        } else {
             imageButton.setImageResource(R.drawable.ic_star_black_24dp);
-        }else{
-            Toast.makeText(context,"PRIORITY IS DIFFERENT",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -100,7 +98,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
     /***Multi Select Functionality***/
     public void refreshAdapter(ArrayList<Todo> arrayList, ArrayList<Todo> selectedPendingTasks) {
         this.arrayList = arrayList;
-        this.selectedPendingTasks = selectedPendingTasks;
+//        this.selectedPendingTasks = selectedPendingTasks;
         this.notifyDataSetChanged();
     }
 

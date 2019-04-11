@@ -1,88 +1,176 @@
 package com.example.kadyan.personaltasks.Data;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Todo implements Serializable {
+import java.util.Calendar;
+
+public class Todo implements Parcelable {
+
+    private Long todoId;
 
     private String title;
     private String description;
-    private String dueDate;
-    private int priority;
-    private String type;
     private long timeOfAddition;
-    private String reminder;
-    private String repeat;
 
-//    public Todo(String title, String description, String dueDate,
-//                int priority, String type, long timeOfAddition, String reminder, String repeat) {
-//        this.title = title;
-//        this.description = description;
-//        this.dueDate = dueDate;
-//        this.priority = priority;
-//        this.type = type;
-//        this.timeOfAddition = timeOfAddition;
-//        this.reminder = reminder;
-//        this.repeat = repeat;
-//    }
+    private Long dueDate;
+    private Long dueTime;
 
-    public Todo(String title, String description, String dueDate, int priority, String type, long timeOfAddition) {
+    private boolean isImportant;
+    private boolean isCompleted;
+
+//    private String reminder;
+//    private String repeat;
+
+    public Todo(){
+        title = "";
+        description = "";
+        timeOfAddition = Calendar.getInstance().getTimeInMillis();
+        dueDate = null;
+        dueTime = null;
+        isImportant = false;
+        isCompleted = false;
+    }
+
+    public Todo(String title, String description, long timeOfAddition, long dueDate,
+                long dueTime, boolean isImportant, boolean isCompleted) {
         this.title = title;
         this.description = description;
-        this.dueDate = dueDate;
-        this.priority = priority;
-        this.type = type;
         this.timeOfAddition = timeOfAddition;
+        this.dueDate = dueDate;
+        this.dueTime = dueTime;
+        this.isImportant = isImportant;
+        this.isCompleted = isCompleted;
     }
 
-    public String getDueDate() {
-        return dueDate;
+    protected Todo(Parcel in) {
+        if (in.readByte() == 0) {
+            todoId = null;
+        } else {
+            todoId = in.readLong();
+        }
+        title = in.readString();
+        description = in.readString();
+        timeOfAddition = in.readLong();
+        if (in.readByte() == 0) {
+            dueDate = null;
+        } else {
+            dueDate = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            dueTime = null;
+        } else {
+            dueTime = in.readLong();
+        }
+        isImportant = in.readByte() != 0;
+        isCompleted = in.readByte() != 0;
     }
 
-    public int getPriority() {
-        return priority;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (todoId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(todoId);
+        }
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeLong(timeOfAddition);
+        if (dueDate == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(dueDate);
+        }
+        if (dueTime == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(dueTime);
+        }
+        dest.writeByte((byte) (isImportant ? 1 : 0));
+        dest.writeByte((byte) (isCompleted ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Todo> CREATOR = new Creator<Todo>() {
+        @Override
+        public Todo createFromParcel(Parcel in) {
+            return new Todo(in);
+        }
+
+        @Override
+        public Todo[] newArray(int size) {
+            return new Todo[size];
+        }
+    };
+
+    public Long getTodoId() {
+        return todoId;
+    }
+
+    public void setTodoId(Long todoId) {
+        this.todoId = todoId;
     }
 
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public long getTimeOfAddition() {
         return timeOfAddition;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTimeOfAddition(long timeOfAddition) {
+        this.timeOfAddition = timeOfAddition;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public Long getDueDate() {
+        return dueDate;
     }
 
-    public String getType() {
-        return type;
+    public void setDueDate(Long dueDate) {
+        this.dueDate = dueDate;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public Long getDueTime() {
+        return dueTime;
     }
 
-    public String getReminder() {
-        return reminder;
+    public void setDueTime(Long dueTime) {
+        this.dueTime = dueTime;
     }
 
-    public void setReminder(String reminder) {
-        this.reminder = reminder;
+    public boolean isImportant() {
+        return isImportant;
     }
 
-    public String getRepeat() {
-        return repeat;
+    public void setImportant(boolean important) {
+        isImportant = important;
     }
 
-    public void setRepeat(String repeat) {
-        this.repeat = repeat;
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }

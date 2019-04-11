@@ -36,20 +36,23 @@ import static com.example.kadyan.personaltasks.Constants.AppConstants.TODO_OBJEC
 
 public class AddTodo extends AppCompatActivity{
 
+
     public final String TAG = this.getClass().getName();
 
     Todo currentTodo;
-    int currentPosition;
+    int currentPosition = 0;
 
     EditText addTitle;
     EditText addDescription;
     EditText addDueDate;
+    EditText addDueTime;
     RadioGroup radioGroup;
     Toolbar toolbar;
     CheckBox todoNotification;//to make an alarm or notification
 
     Calendar myCalendar = Calendar.getInstance();
     AlertDialog alertDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,8 @@ public class AddTodo extends AppCompatActivity{
 
         if (getIntent().hasExtra(TODO_OBJECT)){
             setUpTheActivity(getIntent());
+        }else{
+            currentTodo = new Todo();
         }
 
         addDueDate.setOnClickListener(new View.OnClickListener() {
@@ -72,12 +77,19 @@ public class AddTodo extends AppCompatActivity{
             }
         });
 
+        addDueTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTimePicker();//set datePicker and gets date into editText formated
+            }
+        });
+
         todoNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    setTimePicker();
-                }
+//                if (isChecked){
+//                    setTimePicker();
+//                }
             }
         });
 
@@ -90,6 +102,7 @@ public class AddTodo extends AppCompatActivity{
         addTitle=findViewById(R.id.addTitleEditText);
         addDescription=findViewById(R.id.addDescriptionEditText);
         addDueDate=findViewById(R.id.addDateEditText);
+        addDueTime=findViewById(R.id.addTimeEditText);
         radioGroup = findViewById(R.id.radioGroup);
         todoNotification=findViewById(R.id.todoNotification);
     }
@@ -99,13 +112,14 @@ public class AddTodo extends AppCompatActivity{
         currentTodo = (Todo) intent.getSerializableExtra(TODO_OBJECT);
         addTitle.setText(currentTodo.getTitle());
         addDescription.setText(currentTodo.getDescription());
-        addDueDate.setText(currentTodo.getDueDate());
-        if (currentTodo.getPriority() == 1){
+        addDueDate.setText(currentTodo.getDueDate().toString());
+        addDueTime.setText(currentTodo.getDueTime().toString());
+        if(currentTodo.isImportant()){
             ((RadioButton)findViewById(R.id.radioImportant)).toggle();
         }
         currentPosition = intent.getIntExtra(POSITION_IN_RECYCLER_VIEW,-1);
         Log.e(TAG, "onCreate: "+ currentPosition+" "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
-                currentTodo.getDueDate()+" "+currentTodo.getPriority()+" "+currentTodo.getTimeOfAddition());
+                currentTodo.getDueDate()+" "+currentTodo.isImportant()+" "+currentTodo.getTimeOfAddition());
     }
 
 
@@ -138,6 +152,7 @@ public class AddTodo extends AppCompatActivity{
         String myFormat = "dd/MM/yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.getDefault());
         addDueDate.setText(simpleDateFormat.format(myCalendar.getTime()));
+        currentTodo.setDueDate(myCalendar.getTimeInMillis());
     }
 
 
@@ -147,7 +162,7 @@ public class AddTodo extends AppCompatActivity{
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 myCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
                 myCalendar.set(Calendar.MINUTE,minute);
-                updateNotificationTime();
+                updateDueTime();
             }
         };
         new TimePickerDialog(AddTodo.this,timeSetListener,myCalendar.get(Calendar.HOUR_OF_DAY),
@@ -156,11 +171,12 @@ public class AddTodo extends AppCompatActivity{
 
 
     //update to the ui to show to the user
-    private void updateNotificationTime() {
+    private void updateDueTime() {
         String myFormat = "hh:mm";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat,Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.getDefault());
         Toast.makeText(this,simpleDateFormat.format(myCalendar.getTime()),Toast.LENGTH_SHORT).show();
-        //set time to the required view
+        addDueTime.setText(simpleDateFormat.format(myCalendar.getTime()));
+        currentTodo.setDueTime(myCalendar.getTimeInMillis());
     }
 
 
@@ -189,20 +205,20 @@ public class AddTodo extends AppCompatActivity{
     }
 
 
-    private int getPriority() {
-        int priority;
+    private boolean getPriority() {
+        boolean isImportant = false;
         int priorityId = radioGroup.getCheckedRadioButtonId();
         if (priorityId == R.id.radioNotImportant) {
-            priority = 0;
+            isImportant = false;
         }
         else if (priorityId == R.id.radioImportant){
-            priority = 1;
+            isImportant = true;
         }
         else {
-            priority = 222;
+            isImportant = false;
             Toast.makeText(this,"MUST BE ERROR",Toast.LENGTH_SHORT).show();
         }
-        return priority;
+        return isImportant;
     }
 
 
@@ -226,22 +242,16 @@ public class AddTodo extends AppCompatActivity{
                     Snackbar.make(findViewById(R.id.constraint_add_todo),"Title must be provided",Snackbar.LENGTH_SHORT).show();
                 }else {
                     Intent intent = new Intent();
-                    Todo todo;
-                    if (currentTodo != null){
-                        todo = new Todo(addTitle.getText().toString(),
-                                addDescription.getText().toString(),
-                                addDueDate.getText().toString(),
-                                getPriority(),
-                                DatabaseConstants.PENDING_TASKS,
-                                currentTodo.getTimeOfAddition());
-                        intent.putExtra(POSITION_IN_RECYCLER_VIEW,currentPosition);
-                    }else {
-                        todo = new Todo(addTitle.getText().toString(),
-                                addDescription.getText().toString(),
-                                addDueDate.getText().toString(),
-                                getPriority(),
-                                DatabaseConstants.PENDING_TASKS,
-                                Calendar.getInstance().getTimeInMillis());
+                    Todo todo = new Todo(addTitle.getText().toString(),
+                            addDescription.getText().toString(),
+                            currentTodo.getTimeOfAddition(),
+                            currentTodo.getDueDate(),
+                            currentTodo.getDueTime(),
+                            getPriority(),
+                            currentTodo.isCompleted()
+                    );
+                    if (currentPosition != 0) {
+                        intent.putExtra(POSITION_IN_RECYCLER_VIEW, currentPosition);
                     }
                     intent.putExtra(TODO_OBJECT,todo);
                     setResult(RESULT_OK,intent);

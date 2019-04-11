@@ -66,7 +66,7 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         RecyclerView.ItemDecoration itemDecoration=new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
-        todoAdapter = new TodoAdapter(this, completedTasks, selectedPendingTasks);
+        todoAdapter = new TodoAdapter(this, completedTasks);
         recyclerView.setAdapter(todoAdapter);
     }
 
@@ -197,7 +197,7 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
     private void setTaskPending(Todo todo, int position) {
         completedTasks.remove(todo);
         todoAdapter.notifyItemChanged(position);
-        todo.setType(DatabaseConstants.PENDING_TASKS);
+        todo.setCompleted(true);
         todoDatabase.updateDbItem(todo);
     }
 
@@ -207,8 +207,8 @@ public class CompletedTasks extends AppCompatActivity implements OnRecyclerItemL
 
     public void shareTodo(Todo todo) {
         String text=String.format(getString(R.string.share_task_format),
-                todo.getTitle(),todo.getDescription(),todo.getDueDate(),
-                String.valueOf(todo.getPriority()),todo.getType(),
+                todo.getTitle(),todo.getDescription(),todo.getDueDate().toString(),
+                String.valueOf(todo.isImportant()),String.valueOf(todo.isCompleted()),
                 String.valueOf(todo.getTimeOfAddition()));
         Log.e(TAG, "shareTodo: "+text );
         String mimeType = "text/plain";

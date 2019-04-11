@@ -16,6 +16,7 @@
     <string name="hint_description">Enter Task Description</string>
     <string name="label_dueDate">Date:</string>
     <string name="hint_dueDate">Enter Task Date</string>
+    <string name="hint_dueTime">Enter Task Time</string>
     <string name="label_get_notified">Want to get Notified</string>
     <string name="label_priority">Priority:</string>
     <string name="label_not_important">Not Important</string>

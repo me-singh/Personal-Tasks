@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     private static final int REQUEST_EDIT_TODO = 456;
     private final String TAG = this.getClass().getName();
 
-    TodoAdapter todoAdapter;
     Toolbar toolbar;
     FloatingActionButton fab;
 
@@ -63,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     TodoAdapter overdueAdapter, todayAdapter, tomorrowAdapter, thisWeekAdapter, thisMonthAdapter, restAdapter;
 //    TextView remain, overdue, today, tomorrow, thisWeek, thisMonth, rest;
 
-    private ArrayList<Todo> selectedPendingTasks = new ArrayList<>();
-    boolean isMultiSelect=false;
+//    private ArrayList<Todo> selectedPendingTasks = new ArrayList<>();
+//    boolean isMultiSelect=false;
     private ActionMode mActionMode;
 
     @Override
@@ -128,65 +127,94 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
         overdueRecycler.setLayoutManager(new LinearLayoutManager(this));
         overdueRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        overdueAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        overdueAdapter = new TodoAdapter(this, pendingTasks);
         overdueRecycler.setAdapter(overdueAdapter);
 
         todayRecycler.setLayoutManager(new LinearLayoutManager(this));
         todayRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        todayAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        todayAdapter = new TodoAdapter(this, pendingTasks);
         todayRecycler.setAdapter(todayAdapter);
 
         tomorrowRecycler.setLayoutManager(new LinearLayoutManager(this));
         tomorrowRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        tomorrowAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        tomorrowAdapter = new TodoAdapter(this, pendingTasks);
         tomorrowRecycler.setAdapter(tomorrowAdapter);
 
         thisWeekRecycler.setLayoutManager(new LinearLayoutManager(this));
         thisWeekRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        thisWeekAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        thisWeekAdapter = new TodoAdapter(this, pendingTasks);
         thisWeekRecycler.setAdapter(thisWeekAdapter);
 
         thisMonthRecycler.setLayoutManager(new LinearLayoutManager(this));
         thisMonthRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        thisMonthAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        thisMonthAdapter = new TodoAdapter(this, pendingTasks);
         thisMonthRecycler.setAdapter(thisMonthAdapter);
 
         restRecycler.setLayoutManager(new LinearLayoutManager(this));
         restRecycler.addItemDecoration(itemDecoration);
         overdueRecycler.setHasFixedSize(true);
-        restAdapter = new TodoAdapter(this, pendingTasks,selectedPendingTasks);
+        restAdapter = new TodoAdapter(this, pendingTasks);
         restRecycler.setAdapter(restAdapter);
     }
 
 
     private void deleteTodo(Todo currentTodo, int position) {
         pendingTasks.remove(position);
-        todoAdapter.notifyItemRemoved(position);
+        notifyItemRemoved(position);
         todoDatabase.deleteDbItem(currentTodo);
+    }
+
+    private void notifyDataChanged(){
+        overdueAdapter.notifyDataSetChanged();
+        todayAdapter.notifyDataSetChanged();
+        tomorrowAdapter.notifyDataSetChanged();
+        thisWeekAdapter.notifyDataSetChanged();
+        thisMonthAdapter.notifyDataSetChanged();
+        restAdapter.notifyDataSetChanged();
+    }
+
+    private void notifyItemChanged(int position){
+        overdueAdapter.notifyItemChanged(position);
+        todayAdapter.notifyItemChanged(position);
+        tomorrowAdapter.notifyItemChanged(position);
+        thisWeekAdapter.notifyItemChanged(position);
+        thisMonthAdapter.notifyItemChanged(position);
+        restAdapter.notifyItemChanged(position);
+    }
+
+    private void notifyItemRemoved(int position){
+        overdueAdapter.notifyItemRemoved(position);
+        todayAdapter.notifyItemRemoved(position);
+        tomorrowAdapter.notifyItemRemoved(position);
+        thisWeekAdapter.notifyItemRemoved(position);
+        thisMonthAdapter.notifyItemRemoved(position);
+        restAdapter.notifyItemRemoved(position);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ADD_NEW_TODO && resultCode == RESULT_OK){
-            Todo currentTodo = (Todo) data.getSerializableExtra(AppConstants.TODO_OBJECT);
+            Todo currentTodo = data.getParcelableExtra(AppConstants.TODO_OBJECT);
             todoDatabase.addTodoToDb(currentTodo);
             pendingTasks.add(currentTodo);
-            todoAdapter.notifyDataSetChanged();
-            Log.e(TAG, "onActivityResult: "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
-                    currentTodo.getDueDate()+" "+currentTodo.getPriority()+" "+currentTodo.getTimeOfAddition());
+            notifyDataChanged();
+            Log.e(TAG, "onActivityResult1: "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
+                    currentTodo.getTimeOfAddition()+" "+
+                    currentTodo.getDueDate()+" "+currentTodo.getDueTime()+" "+currentTodo.isImportant());
         }else if (requestCode == REQUEST_EDIT_TODO && resultCode == RESULT_OK){
-            Todo currentTodo = (Todo) data.getSerializableExtra(AppConstants.TODO_OBJECT);
+            Todo currentTodo = data.getParcelableExtra(AppConstants.TODO_OBJECT);
             int position = data.getIntExtra(AppConstants.POSITION_IN_RECYCLER_VIEW,-1);
             if (position > -1){
                 pendingTasks.set(position,currentTodo);
-                todoAdapter.notifyItemChanged(position);
+                notifyItemChanged(position);
                 todoDatabase.updateDbItem(currentTodo);
-                Log.e(TAG, "onActivityResult: "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
-                        currentTodo.getDueDate()+" "+currentTodo.getPriority()+" "+currentTodo.getTimeOfAddition());
+                Log.e(TAG, "onActivityResult2: "+currentTodo.getTitle()+" "+currentTodo.getDescription()+" "+
+                        currentTodo.getTimeOfAddition()+" "+
+                        currentTodo.getDueDate()+" "+currentTodo.getDueTime()+" "+currentTodo.isImportant());
             }else {
                 Toast.makeText(this,"ERROR IN ON EDIT RESULT",Toast.LENGTH_SHORT).show();
             }
@@ -243,14 +271,14 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     @Override
     public void onItemClick(Todo todo,int position) {
         Toast.makeText(this,"ON CLICK WORKING AT " + position + "POSITION",Toast.LENGTH_SHORT).show();
-        if (isMultiSelect)
-            multiSelect(position);
-        else {
+//        if (isMultiSelect)
+//            multiSelect(position);
+//        else {
             Intent intent=new Intent(MainActivity.this,AddTodo.class);
             intent.putExtra(AppConstants.TODO_OBJECT, todo);
             intent.putExtra(AppConstants.POSITION_IN_RECYCLER_VIEW, position);
             startActivityForResult(intent, REQUEST_EDIT_TODO);
-        }
+//        }
     }
 
 
@@ -258,10 +286,11 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     public void onItemPriorityChanged(Todo todo, int position) {
         if (position > -1){
             pendingTasks.set(position,todo);
-            todoAdapter.notifyItemChanged(position);
+//            todoAdapter.notifyItemChanged(position);
+            notifyItemChanged(position);
             todoDatabase.updateDbItem(todo);
             Log.e(TAG, "onActivityResult: "+todo.getTitle()+" "+todo.getDescription()+" "+
-                    todo.getDueDate()+" "+todo.getPriority()+" "+todo.getTimeOfAddition());
+                    todo.getDueDate()+" "+todo.isImportant()+" "+todo.getTimeOfAddition());
         }else {
             Toast.makeText(this,"ERROR IN STAR EDITING",Toast.LENGTH_SHORT).show();
         }
@@ -269,83 +298,84 @@ public class MainActivity extends AppCompatActivity implements OnRecyclerItemLis
     }
 
 
-    private void multiSelect(int position) {
-        if (mActionMode != null) {
-            if (selectedPendingTasks.contains(pendingTasks.get(position))) {
-                selectedPendingTasks.remove(pendingTasks.get(position));
-            } else {
-                selectedPendingTasks.add(pendingTasks.get(position));
-            }
-            if (!selectedPendingTasks.isEmpty())
-                mActionMode.setTitle("" + selectedPendingTasks.size());
-            else {
-                    mActionMode.finish();
-            }
-            todoAdapter.refreshAdapter(pendingTasks, selectedPendingTasks);
-        }
-    }
+//    private void multiSelect(int position) {
+//        if (mActionMode != null) {
+//            if (selectedPendingTasks.contains(pendingTasks.get(position))) {
+//                selectedPendingTasks.remove(pendingTasks.get(position));
+//            } else {
+//                selectedPendingTasks.add(pendingTasks.get(position));
+//            }
+//            if (!selectedPendingTasks.isEmpty())
+//                mActionMode.setTitle("" + selectedPendingTasks.size());
+//            else {
+//                    mActionMode.finish();
+//            }
+////            todoAdapter.refreshAdapter(pendingTasks, selectedPendingTasks);
+//        }
+//    }
 
     @Override
     public void onItemLongClick(final Todo todo, final int position) {
-        if (!isMultiSelect) {
-            selectedPendingTasks = new ArrayList<>();
-            isMultiSelect = true;
-            if (mActionMode == null)
-                mActionMode = startSupportActionMode(new ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                        mode.getMenuInflater().inflate(R.menu.menu_recycler_item_options,menu);
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                        int id=item.getItemId();
-                        if (id == R.id.action_complete){
-                            Toast.makeText(getBaseContext(),"Complete",Toast.LENGTH_SHORT).show();
-                            setTaskCompleted(todo, position);
-                        }else if (id == R.id.action_share){
-                            Toast.makeText(getBaseContext(),"Share",Toast.LENGTH_SHORT).show();
-                            shareTodo(todo);
-                        }else if (id == R.id.action_delete){
-                            Toast.makeText(getBaseContext(),"Delete",Toast.LENGTH_SHORT).show();
-                            deleteTodo(todo, position);
-                        }
-                        mode.finish();
-                        return true;
-                    }
-
-                    @Override
-                    public void onDestroyActionMode(ActionMode mode) {
-                        isMultiSelect = false;
-                        selectedPendingTasks.clear();
-                        todoAdapter.refreshAdapter(pendingTasks, selectedPendingTasks);
-                    }
-                });
-        }
-        multiSelect(position);
+//        if (!isMultiSelect) {
+//            selectedPendingTasks = new ArrayList<>();
+//            isMultiSelect = true;
+//            if (mActionMode == null)
+//                mActionMode = startSupportActionMode(new ActionMode.Callback() {
+//                    @Override
+//                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+//                        mode.getMenuInflater().inflate(R.menu.menu_recycler_item_options,menu);
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+//                        int id=item.getItemId();
+//                        if (id == R.id.action_complete){
+//                            Toast.makeText(getBaseContext(),"Complete",Toast.LENGTH_SHORT).show();
+//                            setTaskCompleted(todo, position);
+//                        }else if (id == R.id.action_share){
+//                            Toast.makeText(getBaseContext(),"Share",Toast.LENGTH_SHORT).show();
+//                            shareTodo(todo);
+//                        }else if (id == R.id.action_delete){
+//                            Toast.makeText(getBaseContext(),"Delete",Toast.LENGTH_SHORT).show();
+//                            deleteTodo(todo, position);
+//                        }
+//                        mode.finish();
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public void onDestroyActionMode(ActionMode mode) {
+//                        isMultiSelect = false;
+//                        selectedPendingTasks.clear();
+//                        todoAdapter.refreshAdapter(pendingTasks, selectedPendingTasks);
+//                    }
+//                });
+//        }
+//        multiSelect(position);
         Toast.makeText(this,"ON LONG CLICK WORKING AT " + position + "POSITION",Toast.LENGTH_SHORT).show();
     }
 
     private void setTaskCompleted(Todo todo, int position) {
         pendingTasks.remove(todo);
-        todoAdapter.notifyItemChanged(position);
-        todo.setType(DatabaseConstants.COMPLETED_TASKS);
+//        todoAdapter.notifyItemChanged(position);
+        notifyItemChanged(position);
+        todo.setCompleted(true);
         todoDatabase.updateDbItem(todo);
     }
 
 
     public void shareTodo(Todo todo) {
         String text=String.format(getString(R.string.share_task_format),
-                todo.getTitle(),todo.getDescription(),todo.getDueDate(),
-                String.valueOf(todo.getPriority()),todo.getType(),
+                todo.getTitle(),todo.getDescription(),todo.getDueDate().toString(),
+                String.valueOf(todo.isImportant()),String.valueOf(todo.isCompleted()),
                 String.valueOf(todo.getTimeOfAddition()));
-        Log.e(TAG, "shareTodo: "+text );
+        Log.e(TAG, "shareTodo: "+text);
         String mimeType = "text/plain";
         String title = "Example title";
         Intent shareIntent =   ShareCompat.IntentBuilder.from(this)

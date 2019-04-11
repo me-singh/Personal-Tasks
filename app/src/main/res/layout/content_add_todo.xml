@@ -112,6 +112,24 @@
         app:layout_constraintTop_toBottomOf="@+id/addDateTextView"
         android:drawableRight="@drawable/ic_date_range_black_24dp" />
 
+    <EditText
+        android:id="@+id/addTimeEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:drawableEnd="@android:drawable/btn_dialog"
+        android:inputType="date"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="@string/hint_dueTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/addDateEditText"
+        android:drawableRight="@android:drawable/btn_dialog" />
+
     <CheckBox
         android:id="@+id/todoNotification"
         android:layout_width="wrap_content"
@@ -125,7 +143,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.037"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/addDateEditText"
+        app:layout_constraintTop_toBottomOf="@+id/addTimeEditText"
         tools:targetApi="jelly_bean" />
 
     <android.support.constraint.Guideline
